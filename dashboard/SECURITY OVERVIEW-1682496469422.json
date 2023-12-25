@@ -1,0 +1,350 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_SQLITE",
+      "label": "SQLite",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "frser-sqlite-datasource",
+      "pluginName": "SQLite"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "frser-sqlite-datasource",
+      "name": "SQLite",
+      "version": "3.1.0"
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.4.7"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "This Dashboard gives an Security Overview of all the products. You can see the count of Security, Quality and License Issues for the product by hovering. Also you can see the details in Executive Dashboard using the link.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_SQLITE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "",
+              "url": "http://10.33.16.39:3000/d/6fiLThY4z/fossa-dashboard?orgId=1&var-project_name=${__data.fields.PRODUCT}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.76,
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_SQLITE}"
+          },
+          "queryText": "select z.product_name as PRODUCT, COALESCE(a.SECURITY_ISSUE,0) as SECURITY,COALESCE(b.QUALITY_ISSUE,0) as QUALITY,COALESCE(c.LICENSE_ISSUE,0) as LICENSE from PRODUCTS z left join\n(select project, count(*) as SECURITY_ISSUE from VULNERABILITY where  issue_type=\"Security Issue\" group by project) a\non z.product_name=a.project \nleft join\n(select project, count(*) as QUALITY_ISSUE from VULNERABILITY where  issue_type=\"outdated dependency\" group by project) b\non z.product_name=b.project\nleft join \n(select project, count(*) as LICENSE_ISSUE from VULNERABILITY where  issue_type=\"unlicensed dependency\" group by project) c\non z.product_name=c.project \ngroup by z.product_name;",
+          "queryType": "table",
+          "rawQueryText": "select z.product_name as PRODUCT, COALESCE(a.SECURITY_ISSUE,0) as SECURITY,COALESCE(b.QUALITY_ISSUE,0) as QUALITY,COALESCE(c.LICENSE_ISSUE,0) as LICENSE from PRODUCTS z left join\n(select project, count(*) as SECURITY_ISSUE from VULNERABILITY where  issue_type=\"Security Issue\" group by project) a\non z.product_name=a.project \nleft join\n(select project, count(*) as QUALITY_ISSUE from VULNERABILITY where  issue_type=\"outdated dependency\" group by project) b\non z.product_name=b.project\nleft join \n(select project, count(*) as LICENSE_ISSUE from VULNERABILITY where  issue_type=\"unlicensed dependency\" group by project) c\non z.product_name=c.project \ngroup by z.product_name;",
+          "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        }
+      ],
+      "title": "FOSSA Status",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_SQLITE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 3,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "quality_gate_status"
+          }
+        ]
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "$$hashKey": "object:155",
+          "aggregation": "Last",
+          "alias": "quality_gate_status",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_SQLITE}"
+          },
+          "decimals": 2,
+          "displayAliasType": "Warning / Critical",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Warning / Critical",
+          "key": "Q-19fce92e-81b2-444c-abf4-367fac2741d2-0",
+          "queryText": "select project, quality_gate_status from sonar_metrics;",
+          "queryType": "table",
+          "rawQueryText": "select project, quality_gate_status from sonar_metrics;",
+          "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ],
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "title": "Sonar Status",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "${DS_SQLITE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 4,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "${DS_SQLITE}"
+          },
+          "key": "Q-82c7e721-5a0a-4d98-a336-472552d40f07-0",
+          "queryText": "select metric , last_run as \"Update Timestamp\" from last_update;",
+          "queryType": "table",
+          "rawQueryText": "select metric , last_run as \"Update Timestamp\" from last_update;",
+          "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        }
+      ],
+      "title": "Data Update",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "revision": 1,
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "Author:Tanmay"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "SECURITY OVERVIEW",
+  "uid": "vbOXHAYVz",
+  "version": 10,
+  "weekStart": ""
+}

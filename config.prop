@@ -1,0 +1,12 @@
+[fossa-config]
+auth_key=c743d5506cbd1fdc0eab04ebb155f759
+url=https://app.fossa.com/api/projects/
+db=vulnerability.db
+
+[sonar-config]
+auth_key=4da0b77b447aaae675d3111a0fe1311b044fe4a3
+db=vulnerability.db
+url=https://ccq.svc.oneadvanced.com
+
+[webserver-config]
+db=vulnerability.db

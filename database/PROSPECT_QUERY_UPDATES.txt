@@ -1,0 +1,77 @@
+FOSSA DEVELOPER DASHBOARD
+
+Link : http://10.50.41.44:3000/d/WmCZJyY4z/fossa-developer-dashboard?orgId=1&editPanel=2
+
+SQL:
+select count(*) as COUNT from VULNERABILITY_HIST where issue_type = "Security Issue" and project="$project_name" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} ;
+
+Link : http://10.50.41.44:3000/d/WmCZJyY4z/fossa-developer-dashboard?orgId=1&editPanel=4
+SQL:
+select cvss_severity as SEVERITY, count(*) as COUNT from VULNERABILITY_HIST where  project="$project_name" and issue_type="Security Issue" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to}  group by cvss_severity;
+
+Link : http://10.50.41.44:3000/d/WmCZJyY4z/fossa-developer-dashboard?orgId=1&editPanel=6
+SQL:
+select issue_type as "ISSUE TYPE", count(*) as COUNT from VULNERABILITY_HIST where  project="$project_name" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by issue_type;
+
+Link : http://10.50.41.44:3000/d/WmCZJyY4z/fossa-developer-dashboard?orgId=1&from=now-2d&to=now&editPanel=12
+SQL:
+select distinct dependency, current_version, fix_version from VULNERABILITY_HIST where  project="$project_name" and issue_type="Security Issue" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} and fix_version!="NO_SAFE_VERSION";
+
+Link : http://10.50.41.44:3000/d/WmCZJyY4z/fossa-developer-dashboard?orgId=1&editPanel=10
+SQL:
+select a.cvss_severity as SEVERITY, FIXABLE, NO_FIX , (FIXABLE+ NO_FIX) as TOTAL from (
+select cvss_severity , count(*) as NO_FIX from VULNERABILITY_HIST WHERE  project="$project_name" and  fix_version="NO_SAFE_VERSION" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by cvss_severity
+) a,
+(select cvss_severity, count(*) as FIXABLE from VULNERABILITY_HIST WHERE  project="$project_name" and  fix_version!="NO_SAFE_VERSION" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by cvss_severity
+
+) b where a.cvss_severity=b.cvss_severity group by SEVERITY;
+
+FOSSA EXECUTIVE MODULE SUMMARY
+Link : http://10.50.41.44:3000/d/6fiLThY4z/fossa-executive-module-summary?orgId=1&editPanel=2
+SQL:
+select count(*) as COUNT from VULNERABILITY_HIST where issue_type = "Security Issue" and project="$project_name" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to};
+
+Link : http://10.50.41.44:3000/d/6fiLThY4z/fossa-executive-module-summary?orgId=1&editPanel=4
+SQL:
+select cvss_severity as SEVERITY, count(*) as COUNT from VULNERABILITY_HIST where  project="$project_name" and issue_type="Security Issue" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by cvss_severity;
+
+Link : http://10.50.41.44:3000/d/6fiLThY4z/fossa-executive-module-summary?orgId=1&editPanel=6
+SQL:
+select issue_type as "ISSUE TYPE", count(*) as COUNT from VULNERABILITY_HIST where project="$project_name" and  cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by issue_type;
+
+
+
+FOSSA EXECUTIVE PRODUCT SUMMARY
+Link: Link : http://10.50.41.44:3000/d/6fiLThY4z1/fossa-executive-product-summary?orgId=1&editPanel=2
+
+SQL:
+select count(*) as COUNT from VULNERABILITY_HIST where issue_type = "Security Issue" and project in (
+select project from product_repo_map where product = "$product_name") and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} ;
+
+
+
+Link : http://10.50.41.44:3000/d/6fiLThY4z1/fossa-executive-product-summary?orgId=1&editPanel=4
+SQL:
+select cvss_severity as SEVERITY, count(*) as COUNT from VULNERABILITY_HIST where  project in (
+select project from product_repo_map where product = "$product_name") and issue_type="Security Issue" and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by cvss_severity;
+
+
+Link : http://10.50.41.44:3000/d/6fiLThY4z1/fossa-executive-product-summary?orgId=1&editPanel=6
+SQL:
+select issue_type as "ISSUE TYPE", count(*) as COUNT from VULNERABILITY_HIST where  project in (
+select project from product_repo_map where product = "$product_name") and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by issue_type;
+
+
+SECURITY OVERVIEW
+Link : http://10.50.41.44:3000/d/vbOXHAYVz/security-overview?orgId=1&editPanel=2
+SQL:
+select z.product_name as PRODUCT, COALESCE(a.SECURITY_ISSUE,0) as SECURITY,COALESCE(b.QUALITY_ISSUE,0) as QUALITY,COALESCE(c.LICENSE_ISSUE,0) as LICENSE from PRODUCTS z left join
+(select project, count(*) as SECURITY_ISSUE from VULNERABILITY_HIST where  issue_type="Security Issue" and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by project) a
+on z.product_name=a.project 
+left join
+(select project, count(*) as QUALITY_ISSUE from VULNERABILITY_HIST where  issue_type="outdated dependency" and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by project) b
+on z.product_name=b.project
+left join 
+(select project, count(*) as LICENSE_ISSUE from VULNERABILITY_HIST where  issue_type="unlicensed dependency" and cast(strftime('%s', scan_date) as integer)*1000 BETWEEN ${__from} AND ${__to} group by project) c
+on z.product_name=c.project 
+group by z.product_name;

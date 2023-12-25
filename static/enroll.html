@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Product Enrollment</title>
+<link rel="stylesheet" type="text/css" href="static/view.css" media="all">
+<script>
+function myFunction() 
+{
+	var xhr = new XMLHttpRequest();
+	var url = "/enroll";
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4 && xhr.status === 200) {
+            alert(JSON.parse(xhr.response).status);
+			document.myform.reset();
+		}
+	};
+
+    var aws_stack = document.getElementById("element_7").value
+    var other_stack = document.getElementById("element_8").value
+	var data = JSON.stringify({"product": document.getElementById("element_1").value , "project": document.getElementById("element_2").value, "sonar_key": document.getElementById("element_3").value , "java_version": document.getElementById("element_4").value , "spring_version": document.getElementById("element_5").value ,"springboot_version": document.getElementById("element_6").value ,  "aws_services":  aws_stack.split(",")  , "other_technologies":  other_stack.split(",") });
+	xhr.send(data);
+}
+</script>
+
+</head>
+<body id="main_body" >
+	
+	<img id="top" src="static/top.png" alt="">
+	<div id="form_container">
+	
+		<h1><a>Enroll product on PROSPECT</a></h1>
+		<form id="myform" name="myform" class="appnitro" method="get" >
+		
+		<div class="form_description">
+			<h2>Product Details</h2>
+			<p>Please enter the product details to enroll your repos in PROSPECT Dashboard</p>
+		</div>						
+		
+		<ul >
+		<li id="li_1" >
+			<label class="description">product</label>
+			<div>
+				<input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>		
+		<li id="li_2" >
+			<label class="description">project</label>
+			<div>
+				<input id="element_2" name="element_2" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_3" >
+			<label class="description">sonar_key</label>
+			<div>
+				<input id="element_3" name="element_3" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_4" >
+			<label class="description">java_version</label>
+			<div>
+				<input id="element_4" name="element_4" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_5" >
+			<label class="description">spring_version</label>
+			<div>
+				<input id="element_5" name="element_5" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_6" >
+			<label class="description">springboot_version</label>
+			<div>
+				<input id="element_6" name="element_6" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_7" >
+			<label class="description">aws_services</label>
+			<div>
+				<input id="element_7" name="element_7" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+        <li id="li_8" >
+			<label class="description">other_technologies</label>
+			<div>
+				<input id="element_8" name="element_8" class="element text large" type="text" maxlength="255" autocomplete="on" value=""/> 
+			</div> 
+		</li>
+			
+		<li class="buttons">
+			<button id="submit" class="input" type="button" onclick="myFunction()">Submit</button>
+		</li>
+		</ul>
+		</form>	
+		
+	</div>
+	<img id="bottom" src="static/bottom.png" alt="">
+	</body>
+</html>
